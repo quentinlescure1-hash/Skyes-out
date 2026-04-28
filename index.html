@@ -130,7 +130,7 @@
             
             <div class="stats-area" id="stats"></div>
 
-            <div class="qr-section">
+            <div class="qr-section" id="qr-area">
                 <img id="qr-img" src="" alt="QR Code">
                 <p>SCAN TO PLAY</p>
             </div>
@@ -181,6 +181,13 @@
         });
     }
 
+    function generateQR() {
+        const currentUrl = window.location.href;
+        const qrImg = document.getElementById('qr-img');
+        // Utilisation de l'API Google Charts pour générer le QR Code
+        qrImg.src = `https://chart.googleapis.com/chart?cht=qr&chs=150x150&chl=${encodeURIComponent(currentUrl)}`;
+    }
+
     function show() {
         document.getElementById('quiz-ui').style.display = "none";
         document.getElementById('result-container').style.display = "block";
@@ -190,9 +197,8 @@
         document.getElementById('res-name').innerText = res.name;
         document.getElementById('visual-render').innerHTML = res.svg;
 
-        // Generate QR Code automatically
-        const currentUrl = window.location.href;
-        document.getElementById('qr-img').src = `https://chart.googleapis.com/chart?cht=qr&chs=120x120&chl=${encodeURIComponent(currentUrl)}`;
+        // Appelle la génération du QR Code
+        generateQR();
 
         const statDiv = document.getElementById('stats');
         statDiv.innerHTML = "";
