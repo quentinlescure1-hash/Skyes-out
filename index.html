@@ -10,7 +10,6 @@
             --bg: #0a0a1a;
             --card: #141426;
             --text: #ffffff;
-            --border-gold: #d4af37;
         }
 
         body {
@@ -40,9 +39,9 @@
         }
 
         h1 { color: var(--gold); font-size: 2.5rem; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 5px; }
-        .progress { color: #555; margin-bottom: 30px; font-style: italic; letter-spacing: 2px; }
+        .progress { color: #555; margin-bottom: 30px; font-style: italic; }
 
-        .question { font-size: 1.5rem; margin-bottom: 30px; min-height: 80px; line-height: 1.4; }
+        .question { font-size: 1.5rem; margin-bottom: 30px; min-height: 80px; }
 
         .options { display: flex; flex-direction: column; gap: 12px; }
 
@@ -56,30 +55,27 @@
             transition: 0.3s;
             text-align: left;
             text-transform: uppercase;
-            border-radius: 4px;
         }
 
         button.option-btn:hover {
             background: var(--gold);
             color: #000;
-            transform: translateX(5px);
             font-weight: bold;
         }
 
         #result-container { display: none; }
 
         .visual-frame {
-            width: 220px;
-            height: 220px;
-            margin: 0 auto 30px auto;
+            width: 180px;
+            height: 180px;
+            margin: 0 auto 20px auto;
             background: #000;
             border: 3px solid var(--gold);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 20px;
-            box-shadow: 0 0 30px rgba(241,196,15,0.2);
+            padding: 15px;
         }
 
         .island-svg { width: 100%; height: 100%; }
@@ -88,28 +84,33 @@
             font-size: 2rem;
             color: var(--gold);
             text-transform: uppercase;
-            letter-spacing: 3px;
-            margin-bottom: 25px;
+            margin-bottom: 20px;
         }
 
         .stats-area { margin-top: 30px; text-align: left; border-top: 1px solid #222; padding-top: 20px; }
-        .stat-label { display: flex; justify-content: space-between; font-size: 0.85rem; text-transform: uppercase; }
-        .stat-bar-bg { background: #111; height: 8px; margin: 6px 0 15px 0; border-radius: 4px; overflow: hidden; }
+        .stat-label { display: flex; justify-content: space-between; font-size: 0.8rem; text-transform: uppercase; }
+        .stat-bar-bg { background: #111; height: 8px; margin: 5px 0 12px 0; border-radius: 4px; overflow: hidden; }
         .stat-bar-fill { height: 100%; transition: 1.5s ease-out; }
+
+        /* QR CODE STYLING */
+        .qr-section {
+            margin-top: 30px;
+            padding: 15px;
+            background: white;
+            display: inline-block;
+            border-radius: 10px;
+        }
+        .qr-section p { color: black; font-size: 10px; margin: 5px 0 0 0; font-family: sans-serif; font-weight: bold; }
 
         .restart-btn {
             background: none;
             border: 1px solid var(--gold);
             color: var(--gold);
-            padding: 12px 30px;
+            padding: 10px 25px;
             cursor: pointer;
             text-transform: uppercase;
-            font-weight: bold;
             margin-top: 20px;
-            transition: 0.3s;
         }
-
-        .restart-btn:hover { background: var(--gold); color: #000; }
     </style>
 </head>
 <body>
@@ -119,53 +120,46 @@
     <div id="quiz-container">
         <div id="quiz-ui">
             <div class="progress" id="progress">STEP 01 OF 10</div>
-            <div class="question" id="question">Determining your path...</div>
+            <div class="question" id="question">Loading...</div>
             <div class="options" id="options"></div>
         </div>
 
         <div id="result-container">
             <div class="visual-frame" id="visual-render"></div>
             <div class="result-title" id="res-name">RICH CAPITAL</div>
+            
             <div class="stats-area" id="stats"></div>
+
+            <div class="qr-section">
+                <img id="qr-img" src="" alt="QR Code">
+                <p>SCAN TO PLAY</p>
+            </div>
+
+            <br>
             <button class="restart-btn" onclick="location.reload()">RETAKE QUIZ</button>
         </div>
     </div>
 
 <script>
     const BIOME_DATA = {
-        capital: { 
-            name: "RICH CAPITAL", color: "#f1c40f", 
-            svg: `<svg viewBox="0 0 100 100" class="island-svg"><path d="M20,70 L50,85 L80,70 L50,55 Z" fill="#2c3e50"/><path d="M35,65 L65,65 L65,40 L35,40 Z" fill="#f5f5f5"/><path d="M50,40 L50,20 M40,30 L60,30" stroke="#f1c40f" stroke-width="3"/><circle cx="50" cy="15" r="5" fill="#f1c40f"/></svg>` 
-        },
-        ocean: { 
-            name: "CRYSTAL OCEAN", color: "#3498db", 
-            svg: `<svg viewBox="0 0 100 100" class="island-svg"><path d="M20,70 L50,85 L80,70 L50,55 Z" fill="#1a5276"/><path d="M30,50 Q50,70 70,50 T90,50" fill="none" stroke="#3498db" stroke-width="4"/><circle cx="50" cy="40" r="15" fill="#3498db" opacity="0.5"/></svg>` 
-        },
-        mine: { 
-            name: "DEEP MINES", color: "#7f8c8d", 
-            svg: `<svg viewBox="0 0 100 100" class="island-svg"><path d="M20,70 L50,85 L80,70 L50,55 Z" fill="#111"/><path d="M40,55 L60,55 L50,30 Z" fill="#7f8c8d"/><rect x="48" y="55" width="4" height="15" fill="#333"/></svg>` 
-        },
-        forest: { 
-            name: "WILD FOREST", color: "#27ae60", 
-            svg: `<svg viewBox="0 0 100 100" class="island-svg"><path d="M20,70 L50,85 L80,70 L50,55 Z" fill="#3d2b1f"/><circle cx="50" cy="45" r="18" fill="#27ae60"/><circle cx="65" cy="40" r="12" fill="#2ecc71" opacity="0.7"/></svg>` 
-        },
-        desert: { 
-            name: "BURNING DESERT", color: "#e67e22", 
-            svg: `<svg viewBox="0 0 100 100" class="island-svg"><path d="M15,70 L50,85 L85,70 L50,55 Z" fill="#935116"/><path d="M30,70 L50,35 L70,70 Z" fill="#e67e22"/><circle cx="80" cy="25" r="8" fill="#f1c40f"/></svg>` 
-        }
+        capital: { name: "RICH CAPITAL", color: "#f1c40f", svg: `<svg viewBox="0 0 100 100" class="island-svg"><path d="M20,70 L50,85 L80,70 L50,55 Z" fill="#2c3e50"/><path d="M35,65 L65,65 L65,40 L35,40 Z" fill="#f5f5f5"/><circle cx="50" cy="20" r="8" fill="#f1c40f"/></svg>` },
+        ocean: { name: "CRYSTAL OCEAN", color: "#3498db", svg: `<svg viewBox="0 0 100 100" class="island-svg"><path d="M20,70 L50,85 L80,70 L50,55 Z" fill="#1a5276"/><path d="M30,50 Q50,70 70,50" fill="none" stroke="#3498db" stroke-width="4"/></svg>` },
+        mine: { name: "DEEP MINES", color: "#7f8c8d", svg: `<svg viewBox="0 0 100 100" class="island-svg"><path d="M20,70 L50,85 L80,70 L50,55 Z" fill="#111"/><rect x="45" y="40" width="10" height="20" fill="#7f8c8d"/></svg>` },
+        forest: { name: "WILD FOREST", color: "#27ae60", svg: `<svg viewBox="0 0 100 100" class="island-svg"><path d="M20,70 L50,85 L80,70 L50,55 Z" fill="#3d2b1f"/><circle cx="50" cy="45" r="18" fill="#27ae60"/></svg>` },
+        desert: { name: "BURNING DESERT", color: "#e67e22", svg: `<svg viewBox="0 0 100 100" class="island-svg"><path d="M20,70 L50,85 L80,70 L50,55 Z" fill="#935116"/><path d="M35,70 L50,40 L65,70 Z" fill="#e67e22"/></svg>` }
     };
 
     const questions = [
-        { q: "Choose your preferred landscape:", options: [{t:"White Marble Towers",b:"capital"},{t:"Floating Reefs",b:"ocean"},{t:"Endless Caves",b:"mine"},{t:"Lush Greenery",b:"forest"},{t:"Golden Dunes",b:"desert"}] },
-        { q: "What is your greatest asset?", options: [{t:"Political Power",b:"capital"},{t:"Adaptability",b:"ocean"},{t:"Raw Strength",b:"mine"},{t:"Natural Harmony",b:"forest"},{t:"Endurance",b:"desert"}] },
-        { q: "Which tool do you trust?", options: [{t:"A Royal Scepter",b:"capital"},{t:"A Sailor's Compass",b:"ocean"},{t:"A Heavy Pickaxe",b:"mine"},{t:"A Hunting Bow",b:"forest"},{t:"A Survival Flask",b:"desert"}] },
-        { q: "Where do you find peace?", options: [{t:"High Above All",b:"capital"},{t:"Lost at Sea",b:"ocean"},{t:"Deep Underground",b:"mine"},{t:"Within the Trees",b:"forest"},{t:"Under the Sun",b:"desert"}] },
-        { q: "What is your main motivation?", options: [{t:"Control",b:"capital"},{t:"Discovery",b:"ocean"},{t:"Wealth",b:"mine"},{t:"Protection",b:"forest"},{t:"Survival",b:"desert"}] },
-        { q: "Choose an element:", options: [{t:"Light",b:"capital"},{t:"Water",b:"ocean"},{t:"Earth",b:"mine"},{t:"Wind",b:"forest"},{t:"Fire",b:"desert"}] },
-        { q: "Your ideal home is...", options: [{t:"Fortified",b:"capital"},{t:"Shifting",b:"ocean"},{t:"Enclosed",b:"mine"},{t:"Wild",b:"forest"},{t:"Vast",b:"desert"}] },
-        { q: "How do others see you?", options: [{t:"A Leader",b:"capital"},{t:"An Explorer",b:"ocean"},{t:"A Worker",b:"mine"},{t:"A Guardian",b:"forest"},{t:"A Nomad",b:"desert"}] },
-        { q: "The Sky represents...", options: [{t:"My Kingdom",b:"capital"},{t:"Infinite Freedom",b:"ocean"},{t:"A Ceiling",b:"mine"},{t:"Breath of Life",b:"forest"},{t:"A Burning Trial",b:"desert"}] },
-        { q: "What do you value most?", options: [{t:"Legacy",b:"capital"},{t:"Curiosity",b:"ocean"},{t:"Results",b:"mine"},{t:"Peace",b:"forest"},{t:"Resilience",b:"desert"}] }
+        { q: "Choose your environment:", options: [{t:"Royal Towers",b:"capital"},{t:"Floating Seas",b:"ocean"},{t:"Deep Caves",b:"mine"},{t:"Old Forests",b:"forest"},{t:"Sunlit Sand",b:"desert"}] },
+        { q: "What is your goal?", options: [{t:"Power",b:"capital"},{t:"Knowledge",b:"ocean"},{t:"Riches",b:"mine"},{t:"Peace",b:"forest"},{t:"Survival",b:"desert"}] },
+        { q: "Your tool of choice?", options: [{t:"Scepter",b:"capital"},{t:"Compass",b:"ocean"},{t:"Pickaxe",b:"mine"},{t:"Bow",b:"forest"},{t:"Flask",b:"desert"}] },
+        { q: "Your element?", options: [{t:"Light",b:"capital"},{t:"Water",b:"ocean"},{t:"Earth",b:"mine"},{t:"Nature",b:"forest"},{t:"Fire",b:"desert"}] },
+        { q: "How do others see you?", options: [{t:"Leader",b:"capital"},{t:"Explorer",b:"ocean"},{t:"Worker",b:"mine"},{t:"Guardian",b:"forest"},{t:"Nomad",b:"desert"}] },
+        { q: "Favorite color?", options: [{t:"Gold",b:"capital"},{t:"Blue",b:"ocean"},{t:"Grey",b:"mine"},{t:"Green",b:"forest"},{t:"Orange",b:"desert"}] },
+        { q: "Your home is...", options: [{t:"Grand",b:"capital"},{t:"Fluid",b:"ocean"},{t:"Hidden",b:"mine"},{t:"Wild",b:"forest"},{t:"Hot",b:"desert"}] },
+        { q: "The Sky is...", options: [{t:"My Throne",b:"capital"},{t:"A Sea",b:"ocean"},{t:"A Lid",b:"mine"},{t:"Life",b:"forest"},{t:"A Trial",b:"desert"}] },
+        { q: "Your strength?", options: [{t:"Authority",b:"capital"},{t:"Curiosity",b:"ocean"},{t:"Willpower",b:"mine"},{t:"Harmony",b:"forest"},{t:"Patience",b:"desert"}] },
+        { q: "Who are you?", options: [{t:"A King",b:"capital"},{t:"A Scholar",b:"ocean"},{t:"An Artisan",b:"mine"},{t:"A Spirit",b:"forest"},{t:"A Survivor",b:"desert"}] }
     ];
 
     let currentIdx = 0;
@@ -196,9 +190,12 @@
         document.getElementById('res-name').innerText = res.name;
         document.getElementById('visual-render').innerHTML = res.svg;
 
+        // Generate QR Code automatically
+        const currentUrl = window.location.href;
+        document.getElementById('qr-img').src = `https://chart.googleapis.com/chart?cht=qr&chs=120x120&chl=${encodeURIComponent(currentUrl)}`;
+
         const statDiv = document.getElementById('stats');
         statDiv.innerHTML = "";
-        
         Object.keys(BIOME_DATA).sort((a,b) => scores[b] - scores[a]).forEach(k => {
             const p = (scores[k] / 10) * 100;
             statDiv.innerHTML += `
@@ -208,39 +205,6 @@
         });
     }
     load();
-</script
-    <script>
-    function generateQR() {
-        // Cette fonction récupère l'adresse URL actuelle du site
-        const currentUrl = window.location.href;
-        const resultContainer = document.getElementById('result-container');
-        
-        // Création d'un espace pour le QR Code
-        const qrDiv = document.createElement('div');
-        qrDiv.style.marginTop = "30px";
-        qrDiv.style.padding = "10px";
-        qrDiv.style.background = "white";
-        qrDiv.style.display = "inline-block";
-        qrDiv.style.borderRadius = "5px";
-        
-        // Image du QR Code via l'API Google (gratuite)
-        const qrImg = document.createElement('img');
-        qrImg.src = `https://chart.googleapis.com/chart?cht=qr&chs=150x150&chl=${encodeURIComponent(currentUrl)}`;
-        qrImg.alt = "Scan to play";
-        
-        const label = document.createElement('p');
-        label.innerText = "SCAN TO CHALLENGE A FRIEND";
-        label.style.color = "black";
-        label.style.fontSize = "10px";
-        label.style.margin = "5px 0 0 0";
-        label.style.fontFamily = "sans-serif";
-
-        qrDiv.appendChild(qrImg);
-        qrDiv.appendChild(label);
-        resultContainer.appendChild(qrDiv);
-    }
-
-    // Appelle cette fonction à l'intérieur de ta fonction show() existante
 </script>
 </body>
 </html>
