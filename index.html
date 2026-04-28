@@ -101,6 +101,7 @@
             border-radius: 10px;
         }
         .qr-section p { color: black; font-size: 10px; margin: 5px 0 0 0; font-family: sans-serif; font-weight: bold; }
+        #qr-img { width: 150px; height: 150px; display: block; }
 
         .restart-btn {
             background: none;
@@ -126,17 +127,17 @@
 
         <div id="result-container">
             <div class="visual-frame" id="visual-render"></div>
-            <div class="result-title" id="res-name">RICH CAPITAL</div>
+            <div class="result-title" id="res-name">BIOME NAME</div>
             
             <div class="stats-area" id="stats"></div>
 
-            <div class="qr-section" id="qr-area">
+            <div class="qr-section">
                 <img id="qr-img" src="" alt="QR Code">
-                <p>SCAN TO PLAY</p>
+                <p>SCAN TO CHALLENGE A FRIEND</p>
             </div>
 
             <br>
-            <button class="restart-btn" onclick="location.reload()">RETAKE QUIZ</button>
+            <button class="restart-btn" onclick="location.reload()">RETAKE JOURNEY</button>
         </div>
     </div>
 
@@ -150,23 +151,26 @@
     };
 
     const questions = [
-        { q: "Choose your environment:", options: [{t:"Royal Towers",b:"capital"},{t:"Floating Seas",b:"ocean"},{t:"Deep Caves",b:"mine"},{t:"Old Forests",b:"forest"},{t:"Sunlit Sand",b:"desert"}] },
-        { q: "What is your goal?", options: [{t:"Power",b:"capital"},{t:"Knowledge",b:"ocean"},{t:"Riches",b:"mine"},{t:"Peace",b:"forest"},{t:"Survival",b:"desert"}] },
-        { q: "Your tool of choice?", options: [{t:"Scepter",b:"capital"},{t:"Compass",b:"ocean"},{t:"Pickaxe",b:"mine"},{t:"Bow",b:"forest"},{t:"Flask",b:"desert"}] },
-        { q: "Your element?", options: [{t:"Light",b:"capital"},{t:"Water",b:"ocean"},{t:"Earth",b:"mine"},{t:"Nature",b:"forest"},{t:"Fire",b:"desert"}] },
-        { q: "How do others see you?", options: [{t:"Leader",b:"capital"},{t:"Explorer",b:"ocean"},{t:"Worker",b:"mine"},{t:"Guardian",b:"forest"},{t:"Nomad",b:"desert"}] },
-        { q: "Favorite color?", options: [{t:"Gold",b:"capital"},{t:"Blue",b:"ocean"},{t:"Grey",b:"mine"},{t:"Green",b:"forest"},{t:"Orange",b:"desert"}] },
-        { q: "Your home is...", options: [{t:"Grand",b:"capital"},{t:"Fluid",b:"ocean"},{t:"Hidden",b:"mine"},{t:"Wild",b:"forest"},{t:"Hot",b:"desert"}] },
-        { q: "The Sky is...", options: [{t:"My Throne",b:"capital"},{t:"A Sea",b:"ocean"},{t:"A Lid",b:"mine"},{t:"Life",b:"forest"},{t:"A Trial",b:"desert"}] },
-        { q: "Your strength?", options: [{t:"Authority",b:"capital"},{t:"Curiosity",b:"ocean"},{t:"Willpower",b:"mine"},{t:"Harmony",b:"forest"},{t:"Patience",b:"desert"}] },
-        { q: "Who are you?", options: [{t:"A King",b:"capital"},{t:"A Scholar",b:"ocean"},{t:"An Artisan",b:"mine"},{t:"A Spirit",b:"forest"},{t:"A Survivor",b:"desert"}] }
+        { q: "Choose your primary environment:", options: [{t:"Golden Spires",b:"capital"},{t:"Floating Reefs",b:"ocean"},{t:"Deep Caverns",b:"mine"},{t:"Ancient Woods",b:"forest"},{t:"Silent Dunes",b:"desert"}] },
+        { q: "What is your main tool?", options: [{t:"Scepter",b:"capital"},{t:"Compass",b:"ocean"},{t:"Pickaxe",b:"mine"},{t:"Bow",b:"forest"},{t:"Flask",b:"desert"}] },
+        { q: "What drives you?", options: [{t:"Perfection",b:"capital"},{t:"Discovery",b:"ocean"},{t:"Wealth",b:"mine"},{t:"Balance",b:"forest"},{t:"Survival",b:"desert"}] },
+        { q: "Your favorite color palette?", options: [{t:"Gold & White",b:"capital"},{t:"Azure & Blue",b:"ocean"},{t:"Grey & Iron",b:"mine"},{t:"Green & Brown",b:"forest"},{t:"Orange & Sand",b:"desert"}] },
+        { q: "Pick an element:", options: [{t:"Light",b:"capital"},{t:"Water",b:"ocean"},{t:"Earth",b:"mine"},{t:"Nature",b:"forest"},{t:"Fire",b:"desert"}] },
+        { q: "Your ideal home is...", options: [{t:"Inaccessible",b:"capital"},{t:"Vast",b:"ocean"},{t:"Deep",b:"mine"},{t:"Wild",b:"forest"},{t:"Harsh",b:"desert"}] },
+        { q: "How do you handle a crisis?", options: [{t:"By Decree",b:"capital"},{t:"Adaptation",b:"ocean"},{t:"Hard Work",b:"mine"},{t:"Harmony",b:"forest"},{t:"Resilience",b:"desert"}] },
+        { q: "What do you seek in the sky?", options: [{t:"My Kingdom",b:"capital"},{t:"Infinite Road",b:"ocean"},{t:"A Lid to Break",b:"mine"},{t:"Life-giving Rain",b:"forest"},{t:"Burning Heat",b:"desert"}] },
+        { q: "Choose a treasure:", options: [{t:"The Crown",b:"capital"},{t:"Rare Map",b:"ocean"},{t:"Raw Diamond",b:"mine"},{t:"Sacred Fruit",b:"forest"},{t:"Peace of Mind",b:"desert"}] },
+        { q: "Who are you at your core?", options: [{t:"A Leader",b:"capital"},{t:"An Explorer",b:"ocean"},{t:"An Artisan",b:"mine"},{t:"A Guardian",b:"forest"},{t:"A Survivor",b:"desert"}] }
     ];
 
     let currentIdx = 0;
     let scores = { capital:0, ocean:0, mine:0, forest:0, desert:0 };
 
     function load() {
-        if (currentIdx >= questions.length) { show(); return; }
+        if (currentIdx >= questions.length) { 
+            show(); 
+            return; 
+        }
         const q = questions[currentIdx];
         document.getElementById('progress').innerText = `STEP ${String(currentIdx + 1).padStart(2, '0')} OF 10`;
         document.getElementById('question').innerText = q.q;
@@ -181,25 +185,22 @@
         });
     }
 
-    function generateQR() {
-        const currentUrl = window.location.href;
-        const qrImg = document.getElementById('qr-img');
-        // Utilisation de l'API Google Charts pour générer le QR Code
-        qrImg.src = `https://chart.googleapis.com/chart?cht=qr&chs=150x150&chl=${encodeURIComponent(currentUrl)}`;
-    }
-
     function show() {
         document.getElementById('quiz-ui').style.display = "none";
         document.getElementById('result-container').style.display = "block";
-        const winner = Object.keys(scores).reduce((a, b) => scores[a] > scores[b] ? a : b);
         
+        const winner = Object.keys(scores).reduce((a, b) => scores[a] > scores[b] ? a : b);
         const res = BIOME_DATA[winner];
+        
         document.getElementById('res-name').innerText = res.name;
         document.getElementById('visual-render').innerHTML = res.svg;
 
-        // Appelle la génération du QR Code
-        generateQR();
+        // Génération du QR Code avec l'alternative stable (QRServer)
+        const currentUrl = window.location.href;
+        const qrImg = document.getElementById('qr-img');
+        qrImg.src = "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=" + encodeURIComponent(currentUrl);
 
+        // Affichage des statistiques
         const statDiv = document.getElementById('stats');
         statDiv.innerHTML = "";
         Object.keys(BIOME_DATA).sort((a,b) => scores[b] - scores[a]).forEach(k => {
@@ -210,6 +211,8 @@
             `;
         });
     }
+
+    // Initialisation
     load();
 </script>
 </body>
