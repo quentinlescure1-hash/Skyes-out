@@ -208,6 +208,39 @@
         });
     }
     load();
+</script
+    <script>
+    function generateQR() {
+        // Cette fonction récupère l'adresse URL actuelle du site
+        const currentUrl = window.location.href;
+        const resultContainer = document.getElementById('result-container');
+        
+        // Création d'un espace pour le QR Code
+        const qrDiv = document.createElement('div');
+        qrDiv.style.marginTop = "30px";
+        qrDiv.style.padding = "10px";
+        qrDiv.style.background = "white";
+        qrDiv.style.display = "inline-block";
+        qrDiv.style.borderRadius = "5px";
+        
+        // Image du QR Code via l'API Google (gratuite)
+        const qrImg = document.createElement('img');
+        qrImg.src = `https://chart.googleapis.com/chart?cht=qr&chs=150x150&chl=${encodeURIComponent(currentUrl)}`;
+        qrImg.alt = "Scan to play";
+        
+        const label = document.createElement('p');
+        label.innerText = "SCAN TO CHALLENGE A FRIEND";
+        label.style.color = "black";
+        label.style.fontSize = "10px";
+        label.style.margin = "5px 0 0 0";
+        label.style.fontFamily = "sans-serif";
+
+        qrDiv.appendChild(qrImg);
+        qrDiv.appendChild(label);
+        resultContainer.appendChild(qrDiv);
+    }
+
+    // Appelle cette fonction à l'intérieur de ta fonction show() existante
 </script>
 </body>
 </html>
